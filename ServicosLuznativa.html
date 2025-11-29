@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyer Interativo - Recanto da Luz Nativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#5D7052', // Verde Musgo
+              secondary: '#D4C5A9', // Bege Areia
+              accent: '#B06D44', // Terracota
+              light: '#F5F5F0', // Off-white
+              dark: '#2C2C28', // Grafite Escuro
+            },
+            fontFamily: {
+              sans: ['Helvetica Neue', 'Arial', 'sans-serif'],
+              serif: ['Georgia', 'serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        body { 
+            background: #e5e5e5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 10px; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+
+        /* CONFIGURAÇÃO 3D DO FLIP */
+        .scene {
+            width: 100%;
+            max-width: 550px;
+            min-height: 750px; 
+            perspective: 1000px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 1s;
+            transform-style: preserve-3d;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-face-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Animações do Acordeão */
+        .service-content {
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .service-content.open {
+            opacity: 1;
+        }
+        .rotate-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONTAINER 3D (Cena) -->
+    <div class="scene" id="scene">
+        
+        <!-- O CARD QUE GIRA -->
+        <div class="card" id="card">
+
+            <!-- === FRENTE DO CARD (Menu de Serviços) === -->
+            <div class="card-face card-face-front">
+                
+                <!-- Botão de Virar Manual (Canto Superior Direito) -->
+                <button onclick="flipCard(event)" class="absolute top-3 right-3 z-50 bg-white/20 hover:bg-white/40 rounded-full p-2 text-white transition-colors" title="Virar Card">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+
+                <!-- Cabeçalho com Logo à Esquerda -->
+                <div class="bg-primary h-48 relative flex items-center justify-center overflow-hidden flex-shrink-0 px-4">
+                    <!-- Elementos Decorativos -->
+                    <div class="absolute w-64 h-64 bg-white/10 rounded-full -top-10 -right-10 blur-2xl"></div>
+                    <div class="absolute w-40 h-40 bg-accent/20 rounded-full bottom-0 left-0 blur-xl"></div>
+                    
+                    <!-- Container Flex para Logo e Texto -->
+                    <div class="z-10 flex items-center justify-center gap-4 w-full">
+                        
+                        <!-- LOGO FRENTE -->
+                        <div class="flex-shrink-0">
+                            <img src="https://i.ibb.co/bMSGCttp/recanto-luz-nativa-branco-removebg-preview.png" 
+                                 alt="Logo Recanto" 
+                                 class="w-24 h-24 object-contain opacity-90 filter brightness-0 invert">
+                        </div>
+
+                        <!-- TEXTO (Direita) -->
+                        <div class="text-left">
+                            <h1 class="text-3xl font-serif text-white tracking-wide mb-1 drop-shadow-md leading-tight">
+                                Recanto da<br/>Luz Nativa
+                            </h1>
+                            <div class="w-12 h-0.5 bg-secondary my-2"></div>
+                            <p class="text-secondary text-[10px] uppercase tracking-widest font-bold">
+                                Bem-estar Holístico
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Principal Frente -->
+                <div class="p-4 bg-white flex-grow flex flex-col">
+                    
+                    <div class="text-center mb-4">
+                        <h2 class="text-2xl font-serif text-primary mb-2">Harmonia para o<br/>Corpo e Alma</h2>
+                        <p class="text-stone-600 text-sm leading-relaxed">
+                            Terapias desenhadas para restaurar seu ritmo natural.
+                        </p>
+                    </div>
+
+                    <!-- Box de Serviços Interativo -->
+                    <div class="bg-light p-3 rounded-lg border border-secondary/30 mb-4 flex-grow">
+                        <h3 class="text-center text-accent font-bold uppercase text-xs mb-4 tracking-widest">Menu de Cuidados</h3>
+                        
+                        <div class="space-y-3">
+                            <!-- Item 1: MO'Ã -->
+                            <div class="bg-white border border-stone-200 rounded-md overflow-hidden service-container" id="container-1">
+                                <button onclick="toggleService(1, event)" class="w-full flex items-center justify-between p-3 text-left outline-none hover:bg-stone-50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-primary mt-1.5" id="dot-1"></span>
+                                        <div class="flex flex-col">
+                                            <span class="text-dark font-medium text-sm leading-tight text-left" id="title-1">MO'Ã - Cuidado e Proteção</span>
+                                            <div class="flex items-center gap-1 text-stone-500 text-[11px] mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Vivência Profunda</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-primary font-bold text-[10px] sm:text-xs bg-primary/10 px-2 py-1 rounded whitespace-nowrap">Sob Consulta</span>
+                                        <span class="text-stone-400 font-bold rotate-icon text-lg leading-none" id="icon-1">+</span>
+                                    </div>
+                                </button>
+                                <div class="service-content" id="content-1">
+                                    <div class="px-4 pb-4 pt-0 text-xs text-stone-600">
+                                        <div class="h-px bg-stone-100 w-full mb-3"></div>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <!-- IMAGEM MO'Ã ALTERADA -->
+                                            <img src="https://i.ibb.co/nqtb04dj/04CAD044.jpg" alt="Ritual Moã" class="w-full sm:w-24 h-24 object-cover rounded-md flex-shrink-0">
+                                            <div class="flex flex-col justify-between">
+                                                <div class="mb-3 leading-relaxed text-justify space-y-2">
+                                                    <p>MO’Á é um espaço dedicado às práticas ancestrais de cura, equilíbrio e fortalecimento da energia vital. Inspirado nas tradições indígenas e na potência das medicinas da natureza.</p>
+                                                    <p>As ervas da caatinga são utilizadas em benzimentos, banhos, defumações, vaporização e massagem; atuando na limpeza de energias e auxiliando em questões emocionais e físicas.</p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20as%20pr%C3%A1ticas%20do%20MO%27%C3%83" target="_blank" class="text-accent uppercase font-bold text-[10px] cursor-pointer hover:underline" onclick="event.stopPropagation()">Solicitar Agendamento &rarr;</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 2: Roda de Rapé -->
+                            <div class="bg-white border border-stone-200 rounded-md overflow-hidden service-container" id="container-2">
+                                <button onclick="toggleService(2, event)" class="w-full flex items-center justify-between p-3 text-left outline-none hover:bg-stone-50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-primary mt-1.5" id="dot-2"></span>
+                                        <div class="flex flex-col">
+                                            <span class="text-dark font-medium text-sm leading-tight text-left" id="title-2">Roda de Rapé</span>
+                                            <div class="flex items-center gap-1 text-stone-500 text-[11px] mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Sessão Guiada</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-primary font-bold text-sm whitespace-nowrap">R$ 120</span>
+                                        <span class="text-stone-400 font-bold rotate-icon text-lg leading-none" id="icon-2">+</span>
+                                    </div>
+                                </button>
+                                <div class="service-content" id="content-2">
+                                    <div class="px-4 pb-4 pt-0 text-xs text-stone-600">
+                                        <div class="h-px bg-stone-100 w-full mb-3"></div>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <!-- IMAGEM RAPÉ ALTERADA -->
+                                            <img src="https://i.ibb.co/VWTGtypL/rape.jpg" alt="Roda de Rapé" class="w-full sm:w-24 h-24 object-cover rounded-md flex-shrink-0">
+                                            <div class="flex flex-col justify-between">
+                                                <p class="mb-3 leading-relaxed">
+                                                    Um círculo sagrado utilizando a medicina ancestral do Rapé, com partilha de saberes. Promove limpeza energética, silencia a mente e aguça a intuição.
+                                                    <br><br>
+                                                    <span class="font-bold text-primary">OBS:</span> Prática em grupo a partir de 02 pessoas (R$ 60 por pessoa).
+                                                </p>
+                                                <div class="text-right">
+                                                    <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20a%20Roda%20de%20Rap%C3%A9" target="_blank" class="text-accent uppercase font-bold text-[10px] cursor-pointer hover:underline" onclick="event.stopPropagation()">Agendar &rarr;</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 3: Kundalini Yoga -->
+                            <div class="bg-white border border-stone-200 rounded-md overflow-hidden service-container" id="container-3">
+                                <button onclick="toggleService(3, event)" class="w-full flex items-center justify-between p-3 text-left outline-none hover:bg-stone-50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-primary mt-1.5" id="dot-3"></span>
+                                        <div class="flex flex-col">
+                                            <span class="text-dark font-medium text-sm leading-tight text-left" id="title-3">Kundalini Yoga</span>
+                                            <div class="flex items-center gap-1 text-stone-500 text-[11px] mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Prática Guiada</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-primary font-bold text-sm whitespace-nowrap">R$ 100</span>
+                                        <span class="text-stone-400 font-bold rotate-icon text-lg leading-none" id="icon-3">+</span>
+                                    </div>
+                                </button>
+                                <div class="service-content" id="content-3">
+                                    <div class="px-4 pb-4 pt-0 text-xs text-stone-600">
+                                        <div class="h-px bg-stone-100 w-full mb-3"></div>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <!-- IMAGEM KUNDALINI ALTERADA -->
+                                            <img src="https://i.ibb.co/shHrMWH/KYOGA.jpg" alt="Kundalini Yoga" class="w-full sm:w-24 h-24 object-cover rounded-md flex-shrink-0">
+                                            <div class="flex flex-col justify-between">
+                                                <p class="mb-3 leading-relaxed">
+                                                    Focada na ativação da energia vital e expansão da consciência. Utiliza posturas (ásanas), respiração (pranayama), meditação e mantras.
+                                                    <br><br>
+                                                    <span class="font-bold text-primary">OBS:</span> Prática em grupo a partir de 02 pessoas (R$ 50 por pessoa).
+                                                </p>
+                                                <div class="text-right">
+                                                    <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20sess%C3%A3o%20de%20Kundalini%20Yoga" target="_blank" class="text-accent uppercase font-bold text-[10px] cursor-pointer hover:underline" onclick="event.stopPropagation()">Agendar &rarr;</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 4: Acupuntura -->
+                            <div class="bg-white border border-stone-200 rounded-md overflow-hidden service-container" id="container-4">
+                                <button onclick="toggleService(4, event)" class="w-full flex items-center justify-between p-3 text-left outline-none hover:bg-stone-50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-primary mt-1.5" id="dot-4"></span>
+                                        <div class="flex flex-col">
+                                            <span class="text-dark font-medium text-sm leading-tight text-left" id="title-4">Acupuntura</span>
+                                            <div class="flex items-center gap-1 text-stone-500 text-[11px] mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>60 min</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-primary font-bold text-sm whitespace-nowrap">R$ 100</span>
+                                        <span class="text-stone-400 font-bold rotate-icon text-lg leading-none" id="icon-4">+</span>
+                                    </div>
+                                </button>
+                                <div class="service-content" id="content-4">
+                                    <div class="px-4 pb-4 pt-0 text-xs text-stone-600">
+                                        <div class="h-px bg-stone-100 w-full mb-3"></div>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=300&q=80" alt="Acupuntura" class="w-full sm:w-24 h-24 object-cover rounded-md flex-shrink-0">
+                                            <div class="flex flex-col justify-between">
+                                                <p class="mb-3 leading-relaxed">
+                                                    Medicina Tradicional Chinesa para desbloquear o fluxo de energia (Qi), aliviando dores e restaurando o equilíbrio através da utilização de agulhas em pontos específicos.
+                                                </p>
+                                                <div class="text-right">
+                                                    <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20sess%C3%A3o%20de%20Acupuntura" target="_blank" class="text-accent uppercase font-bold text-[10px] cursor-pointer hover:underline" onclick="event.stopPropagation()">Agendar &rarr;</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- Item 5: TeleConsulta -->
+                             <div class="bg-white border border-stone-200 rounded-md overflow-hidden service-container" id="container-5">
+                                <button onclick="toggleService(5, event)" class="w-full flex items-center justify-between p-3 text-left outline-none hover:bg-stone-50 transition-colors">
+                                    <div class="flex items-start gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-primary mt-1.5" id="dot-5"></span>
+                                        <div class="flex flex-col">
+                                            <span class="text-dark font-medium text-sm leading-tight text-left" id="title-5">TeleConsulta Médica</span>
+                                            <div class="flex items-center gap-1 text-stone-500 text-[11px] mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Integrativa Online</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-primary font-bold text-sm whitespace-nowrap">R$ 100</span>
+                                        <span class="text-stone-400 font-bold rotate-icon text-lg leading-none" id="icon-5">+</span>
+                                    </div>
+                                </button>
+                                <div class="service-content" id="content-5">
+                                    <div class="px-4 pb-4 pt-0 text-xs text-stone-600">
+                                        <div class="h-px bg-stone-100 w-full mb-3"></div>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=300&q=80" alt="Teleconsulta" class="w-full sm:w-24 h-24 object-cover rounded-md flex-shrink-0">
+                                            <div class="flex flex-col justify-between">
+                                                <p class="mb-3 leading-relaxed">
+                                                    Atendimento médico integrativo online. Abordagem holística focando na raiz dos sintomas e na saúde global. Emissão de receita, atestados e relatórios.
+                                                    <br>
+                                                    <span class="font-bold text-dark">CRM/BA 34216</span>
+                                                </p>
+                                                <div class="text-right">
+                                                    <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20Teleconsulta%20M%C3%A9dica" target="_blank" class="text-accent uppercase font-bold text-[10px] cursor-pointer hover:underline" onclick="event.stopPropagation()">Agendar &rarr;</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Call to Action / Footer -->
+                    <div class="text-center mt-auto">
+                        <p class="text-xl font-serif text-dark mb-4 italic">"Permita-se viver este momento"</p>
+                        
+                        <a href="https://wa.me/5571991959789?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20Recanto%20da%20Luz%20Nativa" target="_blank" class="bg-primary hover:bg-[#4a5a41] transition-colors text-white py-3 px-4 rounded-full inline-block w-full font-bold shadow-lg mb-4 text-center cursor-pointer text-sm leading-tight" onclick="event.stopPropagation()">
+                            Avalie as práticas de cuidado personalizado para suas necessidades
+                        </a>
+                        
+                        <div class="flex justify-center flex-wrap gap-2 text-[10px] md:text-xs text-stone-500 mt-2 border-t border-stone-200 pt-4">
+                            <span>📍 Massacará e Atendimentos itinerantes</span>
+                            <span>•</span>
+                            <span>📱 (71) 99195-9789</span>
+                            <span>•</span>
+                            <span>@recantodaluznativakaimbe</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="h-2 bg-accent w-full flex-shrink-0"></div>
+            </div>
+
+            <!-- === VERSO DO CARD (Capa / Descrição) === -->
+            <div class="card-face card-face-back overflow-hidden relative">
+                
+                <!-- Botão de Voltar (Canto Superior) -->
+                <button onclick="flipCard(event)" class="absolute top-4 right-4 z-50 bg-white/20 hover:bg-white/40 rounded-full p-2 text-white transition-colors" title="Voltar ao Menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+
+                <!-- Imagem de Fundo com Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover filter brightness-[0.4]" alt="Fundo Natureza">
+                    <div class="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
+                </div>
+
+                <!-- Conteúdo do Verso -->
+                <div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center text-white overflow-y-auto">
+                    
+                    <!-- CABEÇALHO DO VERSO MODIFICADO (Logo ao lado do texto) -->
+                    <div class="w-full mb-8 flex items-center justify-center gap-5">
+                        <!-- LOGO VERSO -->
+                        <div class="flex-shrink-0">
+                             <img src="https://i.ibb.co/bMSGCttp/recanto-luz-nativa-branco-removebg-preview.png" 
+                                 alt="Logo Verso" 
+                                 class="w-24 h-24 object-contain filter brightness-0 invert opacity-90">
+                        </div>
+
+                        <!-- TEXTO VERSO -->
+                        <div class="text-left">
+                            <h2 class="text-3xl font-serif text-white tracking-wide mb-1 drop-shadow-lg leading-tight">
+                                Recanto da<br/>Luz Nativa
+                            </h2>
+                            <div class="w-12 h-0.5 bg-secondary my-2"></div>
+                            <p class="text-secondary text-[10px] uppercase tracking-widest font-bold">
+                                Bem-estar Holístico
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-sm md:text-base leading-relaxed font-light text-stone-100 text-justify">
+                        <p>
+                            Através do chamado originário e ancestral nasce como ponte que une em uma corrente de amor, irmandade, cura e aprendizado o Recanto da Luz Nativa.
+                        </p>
+                        <p>
+                            Iluminando nossas consciências por meio das forças da natureza, buscamos viver em harmonia com o todo, e sabemos que isso começa dentro de cada um de nós.
+                        </p>
+                        <p>
+                            O projeto nasceu na Aldeia Indígena de Massacará/Icó, do povo Kaimbé, no norte da Bahia, como uma alternativa de resgate das práticas espirituais ancestrais de culto à Mãe Natureza.
+                        </p>
+                        <p>
+                            Por meio da Jurema Sagrada, da dança do Toré, das forças Encantadas e da magia das medicinas, honramos nossos ancestrais e nos conectamos à fonte primordial do viver: a Natureza.
+                        </p>
+                        <p>
+                            Abraçamos seus mistérios e fortalecemos nossa espiritualidade, conectando-nos com Deus através da simplicidade de ser humano.
+                        </p>
+                        <p>
+                            Entendemos a Natureza como a Luz Nativa da terra, uma fonte que reflete a força do Criador e nutre nossa essência. As práticas ancestrais servem como uma ponte que nos une à força nativa e selvagem da Mãe Terra, despertando em nós o reflexo de seu amor.
+                        </p>
+                        <p class="font-medium italic text-secondary mt-4 text-center">
+                            "Assim, curamo-nos, libertamo-nos e abrimos o caminho para a manifestação de um novo ciclo."
+                        </p>
+                    </div>
+
+                    <div class="mt-8">
+                        <button onclick="flipCard(event)" class="border border-white/50 hover:bg-white/10 text-white px-6 py-2 rounded-full text-sm uppercase tracking-widest transition-all">
+                            Ver Menu de Serviços
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // Lógica de Virar o Card
+        const card = document.getElementById('card');
+        const scene = document.getElementById('scene');
+        let isFlipped = false;
+
+        function flipCard(e) {
+            if(e) e.stopPropagation(); 
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                card.classList.add('is-flipped');
+            } else {
+                card.classList.remove('is-flipped');
+            }
+        }
+
+        document.body.addEventListener('click', function(e) {
+            if (!card.contains(e.target)) {
+                isFlipped = !isFlipped;
+                 if (isFlipped) {
+                    card.classList.add('is-flipped');
+                } else {
+                    card.classList.remove('is-flipped');
+                }
+            }
+        });
+
+        // Lógica do Acordeão (Serviços)
+        function toggleService(id, event) {
+            if (event) event.stopPropagation();
+
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            const title = document.getElementById(`title-${id}`);
+            const container = document.getElementById(`container-${id}`);
+
+            const isClosed = !content.style.maxHeight || content.style.maxHeight === '0px';
+
+            document.querySelectorAll('.service-content').forEach(el => {
+                el.style.maxHeight = '0px';
+                el.classList.remove('open');
+            });
+            document.querySelectorAll('.rotate-icon').forEach(el => {
+                el.innerText = '+';
+                el.style.transform = 'rotate(0deg)';
+                el.classList.remove('text-primary');
+                el.classList.add('text-stone-400');
+            });
+            document.querySelectorAll('[id^="title-"]').forEach(el => {
+                el.classList.remove('text-primary', 'font-bold');
+                el.classList.add('text-dark', 'font-medium');
+            });
+            document.querySelectorAll('.service-container').forEach(el => {
+                el.classList.remove('border-primary', 'shadow-md');
+                el.classList.add('border-stone-200');
+            });
+
+            if (isClosed) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.classList.add('open');
+                
+                icon.innerText = '−';
+                icon.style.transform = 'rotate(180deg)';
+                icon.classList.remove('text-stone-400');
+                icon.classList.add('text-primary');
+
+                title.classList.remove('text-dark', 'font-medium');
+                title.classList.add('text-primary', 'font-bold');
+
+                container.classList.remove('border-stone-200');
+                container.classList.add('border-primary', 'shadow-md');
+            }
+        }
+    </script>
+
+</body>
+</html>
